@@ -8,16 +8,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const type = "video";
 
-  const forceDownload = async (fileUrl: string, filename: string) => {
-    const res = await fetch(fileUrl);
-    const blob = await res.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
-  };
-
   const handleDownload = async () => {
     setLoading(true);
     setResult(null);
@@ -30,9 +20,14 @@ export default function Home() {
       body: JSON.stringify({ url, type }),
     });
 
-    const data = await res.json();
-    setResult(data);
-    setLoading(false);
+    try {
+      const data = await res.json();
+      setResult(data);
+    } catch (e) {
+      setResult({ error: "Error procesando respuesta" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -50,6 +45,26 @@ export default function Home() {
       document.body.appendChild(script);
     }
   }, [result]);
+
+  const forceDownload = async (fileUrl: string, filename: string) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      alert("Error al descargar el archivo");
+    }
+  };
 
   return (
     <main
@@ -134,7 +149,7 @@ export default function Home() {
             justifyContent: "space-between",
           }}
         >
-          {/* IZQUIERDA (VIDEO / INFO) */}
+          {/* VIDEO */}
           <div style={{ flex: 1 }}>
             {result?.video ? (
               <video
@@ -147,62 +162,51 @@ export default function Home() {
             )}
           </div>
 
-          {/* DERECHA (BOTONES) */}
+          {/* INFO + BOTONES */}
           <div style={{ flex: 1 }}>
-            {result?.raw && (
-              <div style={{ marginBottom: 15 }}>
-                {result.raw.title && (
-                  <p style={{ color: "black", fontWeight: "bold", marginBottom: 8 }}>
-                    {result.raw.title}
-                  </p>
-                )}
+            {result?.raw?.title && (
+              <p style={{ color: "black", fontWeight: "bold", marginBottom: 10 }}>
+                {result.raw.title}
+              </p>
+            )}
 
-                {result.raw.title && (
-                  <p style={{ color: "#555", fontSize: 14 }}>
-                    {result.raw.title.match(/#\w+/g)?.join(" ") || ""}
-                  </p>
-                )}
-              </div>
-            )}
-            {result?.video && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                
-                {result?.video && (
-                  <button
-                    onClick={() => forceDownload(result.video, "video.mp4")}
-                    style={{
-                      padding: 12,
-                      background: "#2563eb",
-                      color: "white",
-                      textAlign: "center",
-                      borderRadius: 8,
-                      border: "none",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Descargar Video (Sin Marca)
-                  </button>
-                )}
-                {result?.audio && (
-                  <button
-                    onClick={() => forceDownload(result.audio, "audio.mp3")}
-                    style={{
-                      padding: 12,
-                      background: "#16a34a",
-                      color: "white",
-                      textAlign: "center",
-                      borderRadius: 8,
-                      border: "none",
-                      fontWeight: "bold",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Descargar Audio (MP3)
-                  </button>
-                )}
-              </div>
-            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {result?.video && (
+                <button
+                  onClick={() => forceDownload(result.video, "video.mp4")}
+                  style={{
+                    padding: 12,
+                    background: "#2563eb",
+                    color: "white",
+                    textAlign: "center",
+                    borderRadius: 8,
+                    border: "none",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Descargar Video (Sin Marca)
+                </button>
+              )}
+
+              {result?.audio && (
+                <button
+                  onClick={() => forceDownload(result.audio, "audio.mp3")}
+                  style={{
+                    padding: 12,
+                    background: "#16a34a",
+                    color: "white",
+                    textAlign: "center",
+                    borderRadius: 8,
+                    border: "none",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
+                >
+                  Descargar Audio (MP3)
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
