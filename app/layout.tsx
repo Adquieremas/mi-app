@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Descargar videos de TikTok sin marca de agua gratis | Clipnexo",
-  description: "Descarga videos de TikTok sin logo gratis en segundos. Compatible con celular y PC.",
+  title: "Descargar videos TikTok y audios MP3 | Clipnexo",
+  description: "Descarga videos de TikTok sin marca de agua y audios MP3 gratis. Rápido, online y compatible con celular y PC.",
 };
 
 export default function RootLayout({
