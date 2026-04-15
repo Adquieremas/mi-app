@@ -1,16 +1,17 @@
-import { ReactNode } from "react";
-import { headers } from "next/headers";
+import type { Metadata } from "next";
 
-export default async function RootLayout({
+export const metadata: Metadata = {
+  title: "Clipnexo",
+  description: "Descarga videos de TikTok sin marca de agua",
+};
+
+export default function RootLayout({
   children,
 }: {
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
-  const headerList = await headers();
-  const lang = headerList.get("x-lang") || "es";
-
   return (
-    <html lang={lang}>
+    <html lang="es">
       <body>{children}</body>
     </html>
   );
