@@ -1,73 +1,71 @@
-"use client";
+import type { Metadata } from "next";
+import DownloaderBox from "@/components/DownloaderBox";
 
-import { useState, useEffect } from "react";
+type PageProps = {
+  params: Promise<{ lang: string }>;
+};
 
-import { useParams } from "next/navigation";
+function normalizeLang(lang: string) {
+  if (lang === "en" || lang === "pt") return lang;
+  return "es";
+}
 
-export default function Home() {
-  const params = useParams();
-  const lang = params?.lang as string;
-  const [url, setUrl] = useState("");
-  const [result, setResult] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const type = "video";
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { lang } = await params;
+  const currentLang = normalizeLang(lang);
 
-  const translations: any = {
+  const titles = {
+    es: "Descargar videos TikTok y audios MP3 | Clipnexo",
+    en: "Download TikTok videos and MP3 audio | Clipnexo",
+    pt: "Baixar vídeos do TikTok e áudio MP3 | Clipnexo",
+  };
+
+  const descriptions = {
+    es: "Descarga videos de TikTok sin marca de agua y audios MP3 gratis. Rápido, online y compatible con celular y PC.",
+    en: "Download TikTok videos without watermark and free MP3 audio. Fast, online, and compatible with mobile and PC.",
+    pt: "Baixe vídeos do TikTok sem marca d’água e áudio MP3 grátis. Rápido, online e compatível com celular e PC.",
+  };
+
+  return {
+    title: titles[currentLang as keyof typeof titles],
+    description: descriptions[currentLang as keyof typeof descriptions],
+    alternates: {
+      canonical: `https://clipnexo.com/${currentLang}`,
+      languages: {
+        es: "https://clipnexo.com/es",
+        en: "https://clipnexo.com/en",
+        pt: "https://clipnexo.com/pt",
+        "x-default": "https://clipnexo.com/es",
+      },
+    },
+  };
+}
+
+export default async function Home({ params }: PageProps) {
+  const { lang } = await params;
+  const currentLang = normalizeLang(lang);
+
+  const copy = {
     es: {
       title: "Descargador de Videos TikTok",
       subtitle: "Descarga videos de TikTok sin marca de agua",
-      placeholder: "Pega aquí el enlace de TikTok...",
-      button: "DESCARGAR",
-      loading: "Procesando...",
-      errorVideo: "No se pudo cargar el video",
-      downloadVideo: "Descargar Video (Sin Marca)",
-      downloadAudio: "Descargar Audio (MP3)",
-    },
-    en: {
-      title: "TikTok Video Downloader",
-      subtitle: "Download TikTok videos without watermark",
-      placeholder: "Paste TikTok link here...",
-      button: "DOWNLOAD",
-      loading: "Processing...",
-      errorVideo: "Could not load video",
-      downloadVideo: "Download Video (No Watermark)",
-      downloadAudio: "Download Audio (MP3)",
-    },
-    pt: {
-      title: "Baixar vídeos do TikTok",
-      subtitle: "Baixe vídeos do TikTok sem marca d’água",
-      placeholder: "Cole o link do TikTok aqui...",
-      button: "BAIXAR",
-      loading: "Processando...",
-      errorVideo: "Não foi possível carregar o vídeo",
-      downloadVideo: "Baixar Vídeo (Sem Marca)",
-      downloadAudio: "Baixar Áudio (MP3)",
-    },
-  };
-
-  const t = translations[lang] || translations.en;
-
-  const contentByLang: any = {
-    es: {
-      h2_1: "¿Qué es Clipnexo descargar videos de TikTok sin marca de agua?",
-      p1: "Clipnexo es una herramienta online gratuita que te permite descargar videos de TikTok sin marca de agua en alta calidad. Solo necesitas copiar el enlace del video, pegarlo en el campo superior y descargarlo en segundos.",
-
-      h2_2: "¿Cómo descargar videos de TikTok?",
-      steps: [
+      aboutTitle: "¿Qué es Clipnexo descargar videos de TikTok sin marca de agua?",
+      aboutText:
+        "Clipnexo es una herramienta online gratuita que te permite descargar videos de TikTok sin marca de agua en alta calidad. Solo necesitas copiar el enlace del video, pegarlo en el campo superior y descargarlo en segundos.",
+      howTitle: "¿Cómo descargar videos de TikTok?",
+      howSteps: [
         "Copia el enlace del video desde TikTok",
         "Pégalo en el campo de arriba",
         "Haz clic en descargar",
         "Guarda el video sin marca de agua",
       ],
-
-      h2_3: "Ventajas de usar Clipnexo",
-      benefits: [
+      advantagesTitle: "Ventajas de usar Clipnexo",
+      advantages: [
         "Descarga sin marca de agua",
         "Compatible con celular y PC",
         "No necesitas instalar nada",
         "Rápido y gratis",
       ],
-
       faqTitle: "Preguntas frecuentes",
       faqs: [
         {
@@ -88,27 +86,26 @@ export default function Home() {
         },
       ],
     },
-
     en: {
-      h2_1: "What is Clipnexo TikTok video downloader without watermark?",
-      p1: "Clipnexo is a free online tool that allows you to download TikTok videos without watermark in high quality. Just copy the video link, paste it above, and download it in seconds.",
-
-      h2_2: "How to download TikTok videos?",
-      steps: [
-        "Copy the TikTok video link",
-        "Paste it in the input above",
+      title: "TikTok Video Downloader",
+      subtitle: "Download TikTok videos without watermark",
+      aboutTitle: "What is Clipnexo TikTok video downloader without watermark?",
+      aboutText:
+        "Clipnexo is a free online tool that lets you download TikTok videos without watermark in high quality. Just copy the video link, paste it into the field above, and download it in seconds.",
+      howTitle: "How to download TikTok videos?",
+      howSteps: [
+        "Copy the video link from TikTok",
+        "Paste it into the field above",
         "Click download",
         "Save the video without watermark",
       ],
-
-      h2_3: "Benefits of using Clipnexo",
-      benefits: [
-        "Download without watermark",
+      advantagesTitle: "Advantages of using Clipnexo",
+      advantages: [
+        "No watermark downloads",
         "Compatible with mobile and PC",
         "No installation required",
         "Fast and free",
       ],
-
       faqTitle: "Frequently asked questions",
       faqs: [
         {
@@ -117,39 +114,38 @@ export default function Home() {
         },
         {
           q: "Can I download in HD?",
-          a: "Yes, as long as the original video is high quality.",
+          a: "Yes, as long as the original video is available in high quality.",
         },
         {
-          q: "Is Clipnexo safe?",
-          a: "Yes, no installation or registration is required.",
+          q: "Is Clipnexo safe to use?",
+          a: "Yes, you do not need to install anything or register.",
         },
         {
           q: "Does it work on mobile?",
-          a: "Yes, it works on Android, iPhone and PC.",
+          a: "Yes, you can use it on Android, iPhone, and PC.",
         },
       ],
     },
-
     pt: {
-      h2_1: "O que é Clipnexo downloader de vídeos do TikTok sem marca d’água?",
-      p1: "Clipnexo é uma ferramenta online gratuita que permite baixar vídeos do TikTok sem marca d’água em alta qualidade. Basta copiar o link do vídeo, colar acima e baixar em segundos.",
-
-      h2_2: "Como baixar vídeos do TikTok?",
-      steps: [
+      title: "Baixar vídeos do TikTok",
+      subtitle: "Baixe vídeos do TikTok sem marca d'água",
+      aboutTitle: "O que é o Clipnexo para baixar vídeos do TikTok sem marca d'água?",
+      aboutText:
+        "Clipnexo é uma ferramenta online gratuita que permite baixar vídeos do TikTok sem marca d'água em alta qualidade. Basta copiar o link do vídeo, colar no campo acima e baixar em segundos.",
+      howTitle: "Como baixar vídeos do TikTok?",
+      howSteps: [
         "Copie o link do vídeo do TikTok",
         "Cole no campo acima",
         "Clique em baixar",
-        "Salve o vídeo sem marca d’água",
+        "Salve o vídeo sem marca d'água",
       ],
-
-      h2_3: "Vantagens de usar Clipnexo",
-      benefits: [
-        "Download sem marca d’água",
+      advantagesTitle: "Vantagens de usar o Clipnexo",
+      advantages: [
+        "Baixe sem marca d'água",
         "Compatível com celular e PC",
         "Não precisa instalar nada",
         "Rápido e grátis",
       ],
-
       faqTitle: "Perguntas frequentes",
       faqs: [
         {
@@ -162,302 +158,173 @@ export default function Home() {
         },
         {
           q: "É seguro usar o Clipnexo?",
-          a: "Sim, não é necessário instalar nada nem se registrar.",
+          a: "Sim, você não precisa instalar nada nem se registrar.",
         },
         {
           q: "Funciona no celular?",
-          a: "Sim, funciona em Android, iPhone e PC.",
+          a: "Sim, você pode usar em Android, iPhone e PC.",
         },
       ],
     },
-  };
+  } as const;
 
-  const c = contentByLang[lang] || contentByLang.en;
-
-  const handleDownload = async () => {
-    setLoading(true);
-    setResult(null);
-
-    const res = await fetch("/api/download", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url, type }),
-    });
-
-    try {
-      const data = await res.json();
-      setResult(data);
-    } catch (e) {
-      setResult({ error: "Error procesando respuesta" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (result?.embed) {
-      const existingScript = document.querySelector(
-        'script[src="https://www.tiktok.com/embed.js"]'
-      );
-
-      if (existingScript) existingScript.remove();
-
-      const script = document.createElement("script");
-      script.src = "https://www.tiktok.com/embed.js";
-      script.async = true;
-
-      document.body.appendChild(script);
-    }
-  }, [result]);
-
-  const forceDownload = async (fileUrl: string, filename: string) => {
-    try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-
-      const blobUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename;
-
-      document.body.appendChild(a);
-      a.click();
-
-      a.remove();
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      alert("Error al descargar el archivo");
-    }
-  };
+  const t = copy[currentLang as keyof typeof copy] ?? copy.es;
 
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        fontFamily: "Arial, sans-serif",
-        background: "linear-gradient(135deg, #4f46e5, #ec4899)",
-        padding: "40px 0 0",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <style>{`
-        body { margin: 0; }
-      `}</style>
-      {/* HEADER */}
-      <div style={{ textAlign: "center", color: "white" }}>
-        <h1 style={{ fontSize: "48px", fontWeight: "800", textAlign: "center" }}>
-          {t.title}
-        </h1>
-        <p style={{ marginTop: 10 }}>
-          {t.subtitle}
-        </p>
-      </div>
-
-      {/* CARD */}
-      <div
+    <main>
+      <section
         style={{
-          maxWidth: 500,
-          margin: "40px auto",
-          background: "white",
-          padding: 25,
-          borderRadius: 12,
-          boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+          padding: "48px 20px 72px",
+          textAlign: "center",
+          color: "#111",
         }}
       >
-        <input
-          type="text"
-          placeholder={t.placeholder}
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          style={{
-            width: "100%",
-            padding: 15,
-            borderRadius: 8,
-            border: "1px solid #ddd",
-            marginBottom: 15,
-            color: "black",
-            boxSizing: "border-box",
-          }}
-        />
+        <div style={{ maxWidth: "980px", margin: "0 auto" }}>
+          <div style={{ marginTop: "42px" }}>
+            <DownloaderBox lang={currentLang} type="video" />
+          </div>
+        </div>
+      </section>
 
-        <button
-          onClick={handleDownload}
-          style={{
-            width: "100%",
-            padding: 15,
-            borderRadius: 8,
-            border: "none",
-            color: "white",
-            fontWeight: "bold",
-            background: "linear-gradient(90deg, #6366f1, #ec4899)",
-            cursor: "pointer",
-          }}
-        >
-          {t.button}
-        </button>
-
-        {loading && (
-          <p style={{ marginTop: 15, textAlign: "center" }}>
-            {t.loading}
-          </p>
-        )}
-      </div>
-
-      {/* RESULTADO */}
-      {result && (
+      <section style={{ padding: "0 20px 70px" }}>
         <div
           style={{
-            maxWidth: 900,
-            margin: "40px auto",
-            background: "white",
-            padding: 25,
-            borderRadius: 12,
-            display: "flex",
-            gap: 20,
-            alignItems: "center",
-            justifyContent: "space-between",
+            maxWidth: "960px",
+            margin: "0 auto",
+            background: "#ffffff",
+            borderRadius: "18px",
+            padding: "42px 36px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
+            color: "#111111",
           }}
         >
-          {/* VIDEO */}
-          <div style={{ flex: 1 }}>
-            {result?.video ? (
-              <video
-                src={result.video}
-                controls
-                style={{ width: "100%", borderRadius: 10 }}
-              />
-            ) : (
-              <p style={{ color: "black" }}>{t.errorVideo}</p>
-            )}
-          </div>
+          <h2
+            style={{
+              fontSize: "clamp(28px, 4vw, 52px)",
+              lineHeight: 1.15,
+              fontWeight: 800,
+              margin: 0,
+              color: "#111111",
+            }}
+          >
+            {t.aboutTitle}
+          </h2>
 
-          {/* INFO + BOTONES */}
-          <div style={{ flex: 1 }}>
-            {result?.raw?.title && (
-              <p style={{ color: "black", fontWeight: "bold", marginBottom: 10 }}>
-                {result.raw.title}
-              </p>
-            )}
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {result?.video && (
-                <button
-                  onClick={() => forceDownload(result.video, "video.mp4")}
-                  style={{
-                    padding: 12,
-                    background: "#2563eb",
-                    color: "white",
-                    textAlign: "center",
-                    borderRadius: 8,
-                    border: "none",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  {t.downloadVideo}
-                </button>
-              )}
-
-              {result?.audio && (
-                <button
-                  onClick={() => forceDownload(result.audio, "audio.mp3")}
-                  style={{
-                    padding: 12,
-                    background: "#16a34a",
-                    color: "white",
-                    textAlign: "center",
-                    borderRadius: 8,
-                    border: "none",
-                    fontWeight: "bold",
-                    cursor: "pointer",
-                  }}
-                >
-                  {t.downloadAudio}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {/* CONTENIDO SEO */}
-      <div style={{
-        maxWidth: 900,
-        margin: "40px auto",
-        background: "white",
-        padding: 25,
-        borderRadius: 12,
-        color: "black",
-        lineHeight: 1.6
-      }}>
-        <h2 style={{ fontSize: "30px", fontWeight: "700", marginTop: 20 }}>
-          {c.h2_1}
-        </h2>
-        <p>{c.p1}</p>
-
-        <h2 style={{ fontSize: "30px", fontWeight: "700", marginTop: 20 }}>
-          {c.h2_2}
-        </h2>
-        <ol>
-          {c.steps.map((step: string, i: number) => (
-            <li key={i}>{step}</li>
-          ))}
-        </ol>
-
-        <h2 style={{ fontSize: "30px", fontWeight: "700", marginTop: 20 }}>
-          {c.h2_3}
-        </h2>
-        <ul>
-          {c.benefits.map((b: string, i: number) => (
-            <li key={i}>{b}</li>
-          ))}
-        </ul>
-      </div>
-
-      {/* FAQ */}
-      <div style={{ maxWidth: 900, margin: "40px auto" }}>
-        <h2 style={{ color: "white", textAlign: "center", fontSize: "32px", fontWeight: "800" }}>
-          {c.faqTitle}
-        </h2>
-
-        {c.faqs.map((item: any, i: number) => (
-          <details key={i} style={{
-            background: "white",
-            padding: 15,
-            borderRadius: 8,
-            marginBottom: 10
-          }}>
-            <summary style={{ fontWeight: "bold", cursor: "pointer", color: "black", fontSize: "16px" }}>
-              {item.q}
-            </summary>
-            <p style={{ marginTop: 10, color: "black" }}>{item.a}</p>
-          </details>
-        ))}
-      </div>
-
-      {/* FOOTER */}
-      <footer style={{
-        background: "#000",
-        color: "white",
-        padding: "30px 0",
-        marginTop: "auto",
-        width: "100%",
-      }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 20px" }}>
-          <h3>Clipnexo</h3>
-          <p>Descargador de videos de TikTok sin marca de agua.</p>
-
-          <p style={{ marginTop: 10 }}>
-            Contacto: Hola@clipnexo.com
+          <p
+            style={{
+              marginTop: "26px",
+              fontSize: "18px",
+              lineHeight: 1.8,
+              color: "#222222",
+            }}
+          >
+            {t.aboutText}
           </p>
 
-          <div style={{ marginTop: 20, fontSize: 12, opacity: 0.7 }}>
-            © 2026 Clipnexo. Todos los derechos reservados.
+          <h2
+            style={{
+              marginTop: "34px",
+              fontSize: "clamp(26px, 3.5vw, 42px)",
+              fontWeight: 800,
+              lineHeight: 1.2,
+              color: "#111111",
+            }}
+          >
+            {t.howTitle}
+          </h2>
+
+          <ol
+            style={{
+              marginTop: "18px",
+              paddingLeft: "28px",
+              fontSize: "18px",
+              lineHeight: 1.9,
+              color: "#222222",
+            }}
+          >
+            {t.howSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+
+          <h2
+            style={{
+              marginTop: "34px",
+              fontSize: "clamp(26px, 3.5vw, 42px)",
+              fontWeight: 800,
+              lineHeight: 1.2,
+              color: "#111111",
+            }}
+          >
+            {t.advantagesTitle}
+          </h2>
+
+          <ul
+            style={{
+              marginTop: "18px",
+              paddingLeft: "28px",
+              fontSize: "18px",
+              lineHeight: 1.9,
+              color: "#222222",
+            }}
+          >
+            {t.advantages.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section style={{ padding: "0 20px 90px", textAlign: "center" }}>
+        <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+          <h2
+            style={{
+              fontSize: "clamp(30px, 4vw, 44px)",
+              fontWeight: 800,
+              color: "#111111",
+              margin: 0,
+            }}
+          >
+            {t.faqTitle}
+          </h2>
+
+          <div style={{ marginTop: "26px", display: "grid", gap: "14px" }}>
+            {t.faqs.map((faq) => (
+              <details
+                key={faq.q}
+                style={{
+                  background: "#ffffff",
+                  borderRadius: "12px",
+                  textAlign: "left",
+                  padding: "16px 18px",
+                  boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    fontSize: "18px",
+                    color: "#111111",
+                  }}
+                >
+                  {faq.q}
+                </summary>
+                <p
+                  style={{
+                    marginTop: "12px",
+                    fontSize: "16px",
+                    lineHeight: 1.7,
+                    color: "#333333",
+                  }}
+                >
+                  {faq.a}
+                </p>
+              </details>
+            ))}
           </div>
         </div>
-      </footer>
+      </section>
     </main>
   );
 }
