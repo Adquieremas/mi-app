@@ -37,6 +37,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: t.metaTitle,
     description: t.metaDescription,
+    robots: {
+  index: false,
+  follow: true,
+},
     alternates: {
       languages: {
         es: "https://clipnexo.com/es/dmca",

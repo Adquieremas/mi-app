@@ -1,50 +1,131 @@
+import type { Metadata } from "next";
 
+import { legalContent } from "@/lib/legal-content";
 
-export default function Page() {
+type Lang = "es" | "en" | "pt";
+
+type PageProps = {
+
+  params: Promise<{
+
+    lang: string;
+
+  }>;
+
+};
+
+function normalizeLang(lang: string): Lang {
+
+  return ["es", "en", "pt"].includes(lang) ? (lang as Lang) : "es";
+
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+
+  const { lang } = await params;
+
+  const currentLang = normalizeLang(lang);
+
+  const t = legalContent.terms[currentLang];
+
+  return {
+
+    title: t.metaTitle,
+
+    description: t.metaDescription,
+
+    robots: {
+
+      index: false,
+
+      follow: true,
+
+    },
+
+    alternates: {
+
+      languages: {
+
+        es: "https://clipnexo.com/es/terminos-de-servicio",
+
+        en: "https://clipnexo.com/en/terminos-de-servicio",
+
+        pt: "https://clipnexo.com/pt/terminos-de-servicio",
+
+      },
+
+    },
+
+  };
+
+}
+
+export default async function Page({ params }: PageProps) {
+
+  const { lang } = await params;
+
+  const currentLang = normalizeLang(lang);
+
+  const t = legalContent.terms[currentLang];
+
   return (
-    <main style={{ maxWidth: "900px", margin: "40px auto", padding: "20px", lineHeight: "1.6" }}>
-      <h1 style={{ fontSize: "32px", fontWeight: "bold", color: "#111" }}>
-        Términos de servicio
-      </h1>
 
-      <p style={{ marginTop: "20px", color: "#444" }}>
-        Bienvenido a Clipnexo. Al acceder y utilizar este sitio web, aceptas cumplir con los presentes términos y condiciones de uso. Si no estás de acuerdo con alguno de estos términos, te recomendamos no utilizar nuestros servicios.
-      </p>
+    <main
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Uso del servicio</h2>
-      <p style={{ color: "#444" }}>
-        Clipnexo proporciona una herramienta online para descargar contenido público de TikTok sin marca de agua. El uso del servicio es únicamente para fines personales y no comerciales.
-      </p>
+      style={{
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Responsabilidad del usuario</h2>
-      <p style={{ color: "#444" }}>
-        El usuario es responsable del uso que haga del contenido descargado. Clipnexo no almacena ni distribuye contenido protegido por derechos de autor y no se responsabiliza por el uso indebido del material descargado.
-      </p>
+        maxWidth: "900px",
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Propiedad intelectual</h2>
-      <p style={{ color: "#444" }}>
-        Todo el contenido pertenece a sus respectivos creadores. Clipnexo no tiene relación con TikTok ni con ByteDance Ltd. Esta herramienta actúa únicamente como intermediario técnico.
-      </p>
+        margin: "40px auto",
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Limitación de responsabilidad</h2>
-      <p style={{ color: "#444" }}>
-        No garantizamos disponibilidad continua ni libre de errores. El servicio se ofrece "tal cual" sin garantías de ningún tipo.
-      </p>
+        padding: "20px",
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Publicidad y terceros</h2>
-      <p style={{ color: "#444" }}>
-        Este sitio puede mostrar anuncios de terceros como Google AdSense. Estos servicios pueden utilizar cookies para mostrar anuncios relevantes.
-      </p>
+        lineHeight: "1.6",
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Modificaciones</h2>
-      <p style={{ color: "#444" }}>
-        Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuo del sitio implica la aceptación de dichos cambios.
-      </p>
+      }}
 
-      <h2 style={{ marginTop: "30px", color: "#111" }}>Contacto</h2>
-      <p style={{ color: "#444" }}>
-        Para cualquier consulta sobre estos términos, puedes contactarnos a través de la página de contacto.
-      </p>
+    >
+
+      <h1 style={{ fontSize: "32px", fontWeight: "bold", color: "#111" }}>{t.title}</h1>
+
+      <p style={{ marginTop: "20px", color: "#444" }}>{t.intro}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section1}</h2>
+
+      <p style={{ color: "#444" }}>{t.section1Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section2}</h2>
+
+      <p style={{ color: "#444" }}>{t.section2Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section3}</h2>
+
+      <p style={{ color: "#444" }}>{t.section3Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section4}</h2>
+
+      <p style={{ color: "#444" }}>{t.section4Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section5}</h2>
+
+      <p style={{ color: "#444" }}>{t.section5Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section6}</h2>
+
+      <p style={{ color: "#444" }}>{t.section6Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.section7}</h2>
+
+      <p style={{ color: "#444" }}>{t.section7Text}</p>
+
+      <h2 style={{ marginTop: "30px", color: "#111" }}>{t.contact}</h2>
+
+      <p style={{ color: "#444" }}>{t.contactText}</p>
+
+      <p style={{ marginTop: "40px", color: "#666", fontSize: "14px" }}>{t.updated}</p>
+
     </main>
+
   );
+
 }

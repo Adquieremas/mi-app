@@ -13,6 +13,10 @@ export default function sitemap() {
     "/pt/descargar-tiktok",
     "/pt/descargar-tiktok-mp3",
     "/pt/descargar-tiktok-sin-marca",
+
+    "/pt/acerca-de",
+    "/pt/acerca-de",
+    "/pt/acerca-de",
   ];
 
   return routes.map((route) => ({

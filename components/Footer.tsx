@@ -14,6 +14,7 @@ export default function Footer({ lang }: Props) {
         privacy: "Política de privacidad",
         terms: "Términos de servicio",
         contact: "Contacto",
+        about: "Acerca de",
       },
       rights: "Todos los derechos reservados.",
     },
@@ -25,6 +26,7 @@ export default function Footer({ lang }: Props) {
         privacy: "Privacy Policy",
         terms: "Terms of Service",
         contact: "Contact",
+        about: "About",
       },
       rights: "All rights reserved.",
     },
@@ -36,6 +38,7 @@ export default function Footer({ lang }: Props) {
         privacy: "Política de Privacidade",
         terms: "Termos de Serviço",
         contact: "Contato",
+        about: "Sobre",
       },
       rights: "Todos os direitos reservados.",
     },
@@ -49,18 +52,21 @@ export default function Footer({ lang }: Props) {
       privacy: "/es/politica-de-privacidad",
       terms: "/es/terminos-de-servicio",
       contact: "/es/contacto",
+      about: "/es/acerca-de",
     },
     en: {
       dmca: "/en/dmca",
       privacy: "/en/politica-de-privacidad",
       terms: "/en/terminos-de-servicio",
       contact: "/en/contacto",
+      about: "/en/acerca-de",
     },
     pt: {
       dmca: "/pt/dmca",
       privacy: "/pt/politica-de-privacidad",
       terms: "/pt/terminos-de-servicio",
       contact: "/pt/contacto",
+      about: "/pt/acerca-de",
     },
   } as const;
 
@@ -111,6 +117,9 @@ export default function Footer({ lang }: Props) {
           </Link>
           <Link href={r.contact} style={{ color: "#444", textDecoration: "none", fontSize: "14px" }}>
             {t.links.contact}
+          </Link>
+          <Link href={r.about} style={{ color: "#444", textDecoration: "none", fontSize: "14px" }}>
+            {t.links.about}
           </Link>
         </nav>
       </div>
