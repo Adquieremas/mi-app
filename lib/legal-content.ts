@@ -303,6 +303,9 @@ export const legalContent = {
       section2: "Formulario de contacto",
       section2Text:
         "También puedes utilizar el formulario de contacto para enviarnos mensajes, dudas, sugerencias o reportes de manera rápida y ordenada.",
+      formTitle: "Formulario de contacto",
+      formText:
+        "Si deseas escribirnos, puedes hacerlo a través de nuestro correo o mediante el formulario de contacto disponible en esta página.",
       section3: "Soporte general",
       section3Text:
         "Atendemos consultas relacionadas con el funcionamiento del sitio, errores técnicos, sugerencias de mejora y asuntos generales vinculados con Clipnexo.",
@@ -334,6 +337,9 @@ export const legalContent = {
       section2: "Contact form",
       section2Text:
         "You can also use the contact form to send us messages, questions, suggestions, or reports in a quick and organized way.",
+      formTitle: "Contact form",
+      formText:
+        "If you want to contact us, you can do so through our email or by using the contact form available on this page.",
       section3: "General support",
       section3Text:
         "We handle questions related to website functionality, technical errors, improvement suggestions, and general matters related to Clipnexo.",
@@ -365,6 +371,9 @@ export const legalContent = {
       section2: "Formulário de contato",
       section2Text:
         "Você também pode usar o formulário de contato para enviar mensagens, dúvidas, sugestões ou relatórios de forma rápida e organizada.",
+      formTitle: "Formulário de contato",
+      formText:
+        "Se quiser entrar em contato, você pode nos escrever por e-mail ou usar o formulário de contato disponível nesta página.",
       section3: "Suporte geral",
       section3Text:
         "Atendemos dúvidas relacionadas ao funcionamento do site, erros técnicos, sugestões de melhoria e assuntos gerais ligados ao Clipnexo.",

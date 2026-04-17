@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import { legalContent } from "@/lib/legal-content";
 
+type ContactContent = {
+  metaTitle: string;
+  metaDescription: string;
+  title: string;
+  intro: string;
+  formTitle?: string;
+  formText?: string;
+  updated: string;
+};
+
 type Lang = "es" | "en" | "pt";
 
 type PageProps = {
@@ -16,7 +26,7 @@ function normalizeLang(lang: string): Lang {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { lang } = await params;
   const currentLang = normalizeLang(lang);
-  const t = legalContent.contact[currentLang];
+  const t = legalContent.contact[currentLang] as ContactContent;
 
   return {
     title: t.metaTitle,
@@ -34,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
   const { lang } = await params;
   const currentLang = normalizeLang(lang);
-  const t = legalContent.contact[currentLang];
+  const t = legalContent.contact[currentLang] as ContactContent;
 
   return (
     <main
@@ -68,9 +78,11 @@ export default async function Page({ params }: PageProps) {
         hola@clipnexo.com
       </p>
 
-      <h2 style={{ marginTop: "40px", color: "#111" }}>{t.formTitle}</h2>
+      <h2 style={{ marginTop: "40px", color: "#111" }}>{t.formTitle ?? "Formulario de contacto"}</h2>
 
-      <p style={{ marginTop: "10px", color: "#444" }}>{t.formText}</p>
+      <p style={{ marginTop: "10px", color: "#444" }}>
+        {t.formText ?? "Si deseas comunicarte con nosotros, puedes usar el siguiente formulario."}
+      </p>
 
       <div style={{ marginTop: "20px" }}>
         <iframe
