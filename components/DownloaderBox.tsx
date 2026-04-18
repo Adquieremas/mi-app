@@ -25,6 +25,9 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       errorVideo: "No se pudo cargar el video",
       downloadVideo: "Descargar Video",
       downloadAudio: "Descargar Audio (MP3)",
+      previewTitle: "Vista previa del video",
+      descriptionTitle: "Descripción",
+      hashtagsTitle: "Hashtags",
     },
     en: {
       title: type === "mp3" ? "TikTok to MP3" : "TikTok Video Downloader",
@@ -38,6 +41,9 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       errorVideo: "Could not load video",
       downloadVideo: "Download Video",
       downloadAudio: "Download Audio (MP3)",
+      previewTitle: "Video preview",
+      descriptionTitle: "Description",
+      hashtagsTitle: "Hashtags",
     },
     pt: {
       title: type === "mp3" ? "TikTok para MP3" : "Baixar vídeos do TikTok",
@@ -51,10 +57,27 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       errorVideo: "Não foi possível carregar o vídeo",
       downloadVideo: "Baixar Vídeo",
       downloadAudio: "Baixar Áudio (MP3)",
+      previewTitle: "Pré-visualização do vídeo",
+      descriptionTitle: "Descrição",
+      hashtagsTitle: "Hashtags",
     },
   };
 
   const t = translations[lang] || translations.es;
+
+  const previewVideo = result?.play || result?.video || result?.videoUrl || null;
+  const previewImage = result?.cover || result?.thumbnail || result?.image || null;
+  const descriptionText =
+    result?.description || result?.desc || result?.title || result?.text || "";
+  const hashtagList = Array.isArray(result?.hashtags)
+    ? result.hashtags
+    : typeof result?.hashtags === "string"
+    ? result.hashtags.split(" ").filter(Boolean)
+    : typeof result?.desc === "string"
+    ? result.desc.split(" ").filter((item: string) => item.startsWith("#"))
+    : typeof result?.description === "string"
+    ? result.description.split(" ").filter((item: string) => item.startsWith("#"))
+    : [];
 
   const handleDownload = async () => {
     if (!url.trim()) return;
@@ -180,6 +203,127 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
               marginTop: "15px",
             }}
           >
+            {(previewVideo || previewImage || descriptionText || hashtagList.length > 0) && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr",
+                  gap: "14px",
+                  textAlign: "left",
+                  background: "#f8fafc",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "12px",
+                  padding: "14px",
+                }}
+              >
+                {(previewVideo || previewImage) && (
+                  <div>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#111",
+                        margin: "0 0 10px 0",
+                      }}
+                    >
+                      {t.previewTitle}
+                    </p>
+
+                    {previewVideo ? (
+                      <video
+                        controls
+                        playsInline
+                        poster={previewImage || undefined}
+                        style={{
+                          width: "100%",
+                          borderRadius: "10px",
+                          background: "#000",
+                          maxHeight: "420px",
+                        }}
+                      >
+                        <source src={previewVideo} />
+                        {t.errorVideo}
+                      </video>
+                    ) : (
+                      <img
+                        src={previewImage}
+                        alt={t.previewTitle}
+                        style={{
+                          width: "100%",
+                          borderRadius: "10px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
+                  </div>
+                )}
+
+                {descriptionText && (
+                  <div>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#111",
+                        margin: "0 0 6px 0",
+                      }}
+                    >
+                      {t.descriptionTitle}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "#374151",
+                        fontSize: "14px",
+                        lineHeight: 1.6,
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {descriptionText}
+                    </p>
+                  </div>
+                )}
+
+                {hashtagList.length > 0 && (
+                  <div>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 700,
+                        color: "#111",
+                        margin: "0 0 8px 0",
+                      }}
+                    >
+                      {t.hashtagsTitle}
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "8px",
+                      }}
+                    >
+                      {hashtagList.map((tag: string, index: number) => (
+                        <span
+                          key={`${tag}-${index}`}
+                          style={{
+                            background: "#e0e7ff",
+                            color: "#3730a3",
+                            padding: "6px 10px",
+                            borderRadius: "999px",
+                            fontSize: "13px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {type !== "mp3" && result?.video && (
               <button
                 onClick={() => forceDownload(result.video, "video.mp4")}
