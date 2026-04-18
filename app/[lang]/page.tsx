@@ -189,7 +189,7 @@ export default async function Home({ params }: PageProps) {
           >
             <h1
               style={{
-                fontSize: "clamp(40px, 6vw, 64px)",
+                fontSize: "clamp(32px, 5vw, 52px)",
                 lineHeight: 1.05,
                 fontWeight: 800,
                 color: "#111",
@@ -202,7 +202,7 @@ export default async function Home({ params }: PageProps) {
             <p
               style={{
                 margin: 0,
-                fontSize: "clamp(18px, 2.4vw, 22px)",
+                fontSize: "clamp(17px, 2.1vw, 20px)",
                 lineHeight: 1.5,
                 color: "#444",
               }}
@@ -231,7 +231,7 @@ export default async function Home({ params }: PageProps) {
         >
           <h2
             style={{
-              fontSize: "clamp(28px, 4vw, 52px)",
+              fontSize: "clamp(24px, 3.4vw, 40px)",
               lineHeight: 1.15,
               fontWeight: 800,
               margin: 0,
@@ -244,7 +244,7 @@ export default async function Home({ params }: PageProps) {
           <p
             style={{
               marginTop: "26px",
-              fontSize: "18px",
+              fontSize: "17px",
               lineHeight: 1.8,
               color: "#222222",
             }}
@@ -255,7 +255,7 @@ export default async function Home({ params }: PageProps) {
           <h2
             style={{
               marginTop: "34px",
-              fontSize: "clamp(26px, 3.5vw, 42px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               fontWeight: 800,
               lineHeight: 1.2,
               color: "#111111",
@@ -268,7 +268,7 @@ export default async function Home({ params }: PageProps) {
             style={{
               marginTop: "18px",
               paddingLeft: "28px",
-              fontSize: "18px",
+              fontSize: "17px",
               lineHeight: 1.9,
               color: "#222222",
             }}
@@ -281,7 +281,7 @@ export default async function Home({ params }: PageProps) {
           <h2
             style={{
               marginTop: "34px",
-              fontSize: "clamp(26px, 3.5vw, 42px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               fontWeight: 800,
               lineHeight: 1.2,
               color: "#111111",
@@ -294,7 +294,7 @@ export default async function Home({ params }: PageProps) {
             style={{
               marginTop: "18px",
               paddingLeft: "28px",
-              fontSize: "18px",
+              fontSize: "17px",
               lineHeight: 1.9,
               color: "#222222",
             }}
@@ -310,7 +310,7 @@ export default async function Home({ params }: PageProps) {
         <div style={{ maxWidth: "760px", margin: "0 auto" }}>
           <h2
             style={{
-              fontSize: "clamp(30px, 4vw, 44px)",
+              fontSize: "clamp(24px, 3.2vw, 36px)",
               fontWeight: 800,
               color: "#111111",
               margin: 0,
@@ -335,7 +335,7 @@ export default async function Home({ params }: PageProps) {
                   style={{
                     cursor: "pointer",
                     fontWeight: 700,
-                    fontSize: "18px",
+                    fontSize: "17px",
                     color: "#111111",
                   }}
                 >
@@ -344,7 +344,7 @@ export default async function Home({ params }: PageProps) {
                 <p
                   style={{
                     marginTop: "12px",
-                    fontSize: "16px",
+                    fontSize: "15px",
                     lineHeight: 1.7,
                     color: "#333333",
                   }}

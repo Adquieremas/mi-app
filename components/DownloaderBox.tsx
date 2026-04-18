@@ -39,6 +39,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
         type === "mp3"
           ? "Pega el enlace de TikTok, procesa el contenido y descarga el audio listo para tu celular o PC."
           : "Pega el enlace de TikTok para ver la vista previa, los metadatos del video y los botones de descarga.",
+      guideCta: "¿No sabes cómo usar Clipnexo? Mira la guía paso a paso aquí.",
       invalidUrl: "Pega un enlace válido de TikTok.",
       clipboardError: "No se pudo pegar desde el portapapeles.",
     },
@@ -65,6 +66,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
         type === "mp3"
           ? "Paste the TikTok link, process the content, and download the audio ready for your phone or PC."
           : "Paste the TikTok link to view the preview, video metadata, and download buttons.",
+      guideCta: "Not sure how to use Clipnexo? View the step-by-step guide here.",
       invalidUrl: "Paste a valid TikTok link.",
       clipboardError: "Could not paste from clipboard.",
     },
@@ -91,6 +93,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
         type === "mp3"
           ? "Cole o link do TikTok, processe o conteúdo e baixe o áudio pronto para o celular ou PC."
           : "Cole o link do TikTok para ver a prévia, os metadados do vídeo e os botões de download.",
+      guideCta: "Não sabe como usar o Clipnexo? Veja o guia passo a passo aqui.",
       invalidUrl: "Cole um link válido do TikTok.",
       clipboardError: "Não foi possível colar da área de transferência.",
     },
@@ -229,7 +232,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
   return (
     <section
       style={{
-        maxWidth: "900px",
+        maxWidth: "1040px",
         margin: "0 auto 40px auto",
         textAlign: "center",
         background: "transparent",
@@ -239,7 +242,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
 
       <div
         style={{
-          maxWidth: hasResultContent ? "980px" : "560px",
+          maxWidth: hasResultContent ? "1040px" : "640px",
           margin: "0 auto",
           background: "white",
           padding: isMobile ? "16px" : "25px",
@@ -369,6 +372,24 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
               }}
             >
               {t.emptyText}
+            </p>
+            <p
+              style={{
+                margin: "10px 0 0 0",
+                fontSize: "14px",
+                lineHeight: 1.6,
+              }}
+            >
+              <a
+                href={`/${lang}/como-descargar-videos-de-tiktok`}
+                style={{
+                  color: "#2563eb",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                {t.guideCta}
+              </a>
             </p>
           </div>
         )}

@@ -196,7 +196,7 @@ export default async function Page({ params }: PageProps) {
             color: "#111",
             position: "relative",
             zIndex: 1,
-            fontSize: "clamp(40px, 6vw, 64px)",
+            fontSize: "clamp(32px, 5vw, 52px)",
             lineHeight: 1.05,
             fontWeight: 800,
             margin: "0 0 18px",
@@ -226,7 +226,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(32px, 4vw, 46px)",
+              fontSize: "clamp(24px, 3.4vw, 40px)",
               lineHeight: 1.12,
               fontWeight: 800,
               margin: "0 0 14px",
@@ -243,7 +243,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
@@ -260,7 +260,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
@@ -281,7 +281,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
@@ -302,7 +302,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
@@ -319,7 +319,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
@@ -336,7 +336,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
@@ -370,7 +370,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 14px",
@@ -383,7 +383,7 @@ export default async function Page({ params }: PageProps) {
             <div key={i} style={{ marginBottom: "20px" }}>
               <h3
                 style={{
-                  fontSize: "24px",
+                  fontSize: "20px",
                   lineHeight: 1.3,
                   fontWeight: 700,
                   margin: "0 0 8px",
@@ -401,7 +401,7 @@ export default async function Page({ params }: PageProps) {
             <div key={`extra-${i}`} style={{ marginBottom: "20px" }}>
               <h3
                 style={{
-                  fontSize: "24px",
+                  fontSize: "20px",
                   lineHeight: 1.3,
                   fontWeight: 700,
                   margin: "0 0 8px",
@@ -420,7 +420,7 @@ export default async function Page({ params }: PageProps) {
         <section style={{ marginBottom: "34px" }}>
           <h2
             style={{
-              fontSize: "clamp(28px, 3.2vw, 38px)",
+              fontSize: "clamp(23px, 3vw, 34px)",
               lineHeight: 1.18,
               fontWeight: 800,
               margin: "0 0 12px",
