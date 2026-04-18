@@ -5,6 +5,17 @@ function extractHashtags(text: string): string[] {
   return matches ? Array.from(new Set(matches)) : [];
 }
 
+function isValidTikTokUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const hostname = parsed.hostname.replace(/^www\./, "").toLowerCase();
+
+    return ["tiktok.com", "m.tiktok.com", "vm.tiktok.com", "vt.tiktok.com"].includes(hostname);
+  } catch {
+    return false;
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -15,6 +26,18 @@ export async function POST(req: Request) {
         {
           success: false,
           error: "Debes enviar un enlace de TikTok",
+          errorCode: "EMPTY_URL",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!isValidTikTokUrl(url)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "El enlace enviado no es válido o no pertenece a TikTok",
+          errorCode: "INVALID_TIKTOK_URL",
         },
         { status: 400 }
       );
@@ -35,7 +58,8 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: false,
-          error: "No se pudo consultar el servidor externo",
+          error: "No se pudo consultar el servidor externo en este momento",
+          errorCode: "UPSTREAM_UNAVAILABLE",
         },
         { status: 502 }
       );
@@ -108,16 +132,19 @@ export async function POST(req: Request) {
         }
       : null;
 
-    console.log("TIKWM RESPONSE:", JSON.stringify(data, null, 2));
-    console.log("VIDEO CANDIDATES:", candidates);
-    console.log("AUDIO CANDIDATES:", audioCandidates);
+    if (process.env.NODE_ENV !== "production") {
+      console.log("TIKWM RESPONSE:", JSON.stringify(data, null, 2));
+      console.log("VIDEO CANDIDATES:", candidates);
+      console.log("AUDIO CANDIDATES:", audioCandidates);
+    }
 
     if (!video && !audio) {
       return NextResponse.json(
         {
           success: false,
-          error: "No se pudo obtener contenido descargable",
-          debug: data?.data || data || null,
+          error: "No se encontró contenido descargable para este enlace",
+          errorCode: "NO_DOWNLOADABLE_CONTENT",
+          debug: process.env.NODE_ENV !== "production" ? data?.data || data || null : null,
         },
         { status: 404 }
       );
@@ -125,6 +152,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
+      message: "Contenido encontrado correctamente",
       video,
       audio,
       play: video,
@@ -143,7 +171,8 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         success: false,
-        error: "Error en servidor",
+        error: "Ocurrió un error interno al procesar la descarga",
+        errorCode: "INTERNAL_SERVER_ERROR",
       },
       { status: 500 }
     );

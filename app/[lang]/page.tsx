@@ -47,8 +47,8 @@ export default async function Home({ params }: PageProps) {
 
   const copy = {
     es: {
-      title: "Descargador de Videos TikTok",
-      subtitle: "Descarga videos de TikTok sin marca de agua",
+      title: "Descargador de videos de TikTok",
+      subtitle: "Descargar videos de TikTok sin marca de agua en iPhone, Android",
       aboutTitle: "¿Qué es Clipnexo descargar videos de TikTok sin marca de agua?",
       aboutText:
         "Clipnexo es una herramienta online gratuita que te permite descargar videos de TikTok sin marca de agua en alta calidad. Solo necesitas copiar el enlace del video, pegarlo en el campo superior y descargarlo en segundos.",
@@ -87,8 +87,8 @@ export default async function Home({ params }: PageProps) {
       ],
     },
     en: {
-      title: "TikTok Video Downloader",
-      subtitle: "Download TikTok videos without watermark",
+      title: "TikTok video downloader",
+      subtitle: "Download TikTok videos without watermark on iPhone, Android",
       aboutTitle: "What is Clipnexo TikTok video downloader without watermark?",
       aboutText:
         "Clipnexo is a free online tool that lets you download TikTok videos without watermark in high quality. Just copy the video link, paste it into the field above, and download it in seconds.",
@@ -127,8 +127,8 @@ export default async function Home({ params }: PageProps) {
       ],
     },
     pt: {
-      title: "Baixar vídeos do TikTok",
-      subtitle: "Baixe vídeos do TikTok sem marca d'água",
+      title: "Baixador de vídeos do TikTok",
+      subtitle: "Baixar vídeos do TikTok sem marca d'água no iPhone e Android",
       aboutTitle: "O que é o Clipnexo para baixar vídeos do TikTok sem marca d'água?",
       aboutText:
         "Clipnexo é uma ferramenta online gratuita que permite baixar vídeos do TikTok sem marca d'água em alta qualidade. Basta copiar o link do vídeo, colar no campo acima e baixar em segundos.",
@@ -180,6 +180,37 @@ export default async function Home({ params }: PageProps) {
         }}
       >
         <div style={{ maxWidth: "980px", margin: "0 auto" }}>
+          <div
+            style={{
+              maxWidth: "900px",
+              margin: "0 auto 32px auto",
+              textAlign: "center",
+            }}
+          >
+            <h1
+              style={{
+                fontSize: "clamp(40px, 6vw, 64px)",
+                lineHeight: 1.05,
+                fontWeight: 800,
+                color: "#111",
+                margin: "0 0 14px 0",
+              }}
+            >
+              {t.title}
+            </h1>
+
+            <p
+              style={{
+                margin: 0,
+                fontSize: "clamp(18px, 2.4vw, 22px)",
+                lineHeight: 1.5,
+                color: "#444",
+              }}
+            >
+              {t.subtitle}
+            </p>
+          </div>
+
           <div style={{ marginTop: "42px" }}>
             <DownloaderBox lang={currentLang} type="video" />
           </div>
