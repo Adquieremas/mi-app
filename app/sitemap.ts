@@ -17,6 +17,10 @@ export default function sitemap() {
     "/pt/acerca-de",
     "/pt/acerca-de",
     "/pt/acerca-de",
+
+    "/pt/como-descargar-videos-de-tiktok",
+    "/pt/como-descargar-videos-de-tiktok",
+    "/pt/como-descargar-videos-de-tiktok",
   ];
 
   return routes.map((route) => ({
