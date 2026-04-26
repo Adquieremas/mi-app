@@ -1,13 +1,16 @@
 {
+  "id": "/",
   "name": "Clipnexo",
   "short_name": "Clipnexo",
   "description": "Descargador de videos de TikTok sin marca de agua",
+  "lang": "es",
   "start_url": "/es",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "orientation": "portrait",
+  "categories": ["utilities", "video", "productivity"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -25,5 +28,14 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "/share-target",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }

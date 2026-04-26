@@ -3,6 +3,7 @@ import DownloaderBox from "@/components/DownloaderBox";
 
 type PageProps = {
   params: Promise<{ lang: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 function normalizeLang(lang: string) {
@@ -41,9 +42,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function Home({ params }: PageProps) {
+export default async function Home({ params, searchParams }: PageProps) {
   const { lang } = await params;
   const currentLang = normalizeLang(lang);
+  const resolvedSearchParams = await searchParams;
+
+  const initialUrl =
+    typeof resolvedSearchParams.url === "string" ? resolvedSearchParams.url : "";
+
+  const shared =
+    typeof resolvedSearchParams.shared === "string"
+      ? resolvedSearchParams.shared === "1"
+      : false;
+
+  const shareError =
+    typeof resolvedSearchParams.share_error === "string"
+      ? resolvedSearchParams.share_error === "1"
+      : false;
 
   const copy = {
     es: {
@@ -212,7 +227,13 @@ export default async function Home({ params }: PageProps) {
           </div>
 
           <div style={{ marginTop: "42px" }}>
-            <DownloaderBox lang={currentLang} type="video" />
+            <DownloaderBox
+              lang={currentLang}
+              type="video"
+              initialUrl={initialUrl}
+              shared={shared}
+              shareError={shareError}
+            />
           </div>
         </div>
       </section>

@@ -1,19 +1,51 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import DownloadHistory from "@/components/DownloadHistory";
+import {
+  addDownloadHistoryItem,
+  clearDownloadHistory,
+  getDownloadHistory,
+  removeDownloadHistoryItem,
+  type DownloadHistoryItem,
+} from "@/lib/download-history";
+import { buildDownloadFilename, downloadFile } from "@/lib/download-manager";
+import { getStatusStyles, type StatusType } from "@/lib/downloader-status";
+import {
+  getDescriptionText,
+  getHashtagList,
+  getPreviewImage,
+  getPreviewVideo,
+  hasResultContent as hasResultContentUtil,
+  isTikTokUrl,
+} from "@/lib/downloader-utils";
 
 type Props = {
   lang: string;
   type?: "video" | "mp3";
+  initialUrl?: string;
+  shared?: boolean;
+  shareError?: boolean;
 };
 
-export default function DownloaderBox({ lang, type = "video" }: Props) {
+export default function DownloaderBox({
+  lang,
+  type = "video",
+  initialUrl = "",
+  shared = false,
+  shareError = false,
+}: Props) {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [statusMessage, setStatusMessage] = useState("");
-  const [statusType, setStatusType] = useState<"success" | "error" | "info">("info");
+  const [statusType, setStatusType] = useState<StatusType>("info");
   const [isMobile, setIsMobile] = useState(false);
+  const [isPasting, setIsPasting] = useState(false);
+  const [downloadingType, setDownloadingType] = useState<"video" | "audio" | null>(null);
+  const [historyItems, setHistoryItems] = useState<DownloadHistoryItem[]>([]);
+
+  const autoPasteTriedRef = useRef(false);
 
   const translations: Record<string, any> = {
     es: {
@@ -24,17 +56,26 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
           : "Descarga videos de TikTok sin marca de agua",
       placeholder: "Pega aquí el enlace de TikTok...",
       button: type === "mp3" ? "DESCARGAR MP3" : "DESCARGAR",
-      loading: "Procesando...",
+      loading: "Procesando enlace...",
       errorVideo: "No se pudo cargar el video",
+      genericError: "Ocurrió un error. Inténtalo nuevamente.",
       downloadVideo: "Descargar Video",
       downloadAudio: "Descargar Audio (MP3)",
+      downloadingVideo: "Preparando video...",
+      downloadingAudio: "Preparando audio...",
+      downloadStartedVideo: "La descarga del video ha comenzado.",
+      downloadStartedAudio: "La descarga del audio ha comenzado.",
       previewTitle: "Vista previa del video",
       descriptionTitle: "Descripción",
       hashtagsTitle: "Hashtags",
       paste: "Pegar enlace",
+      pasteLoading: "Pegando...",
       clear: "Limpiar",
       success: "Video encontrado correctamente. Ya puedes descargarlo.",
-      emptyTitle: type === "mp3" ? "Convierte TikTok a MP3 en segundos" : "Descarga videos de TikTok en segundos",
+      emptyTitle:
+        type === "mp3"
+          ? "Convierte TikTok a MP3 en segundos"
+          : "Descarga videos de TikTok en segundos",
       emptyText:
         type === "mp3"
           ? "Pega el enlace de TikTok, procesa el contenido y descarga el audio listo para tu celular o PC."
@@ -42,6 +83,15 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       guideCta: "¿No sabes cómo usar Clipnexo? Mira la guía paso a paso aquí.",
       invalidUrl: "Pega un enlace válido de TikTok.",
       clipboardError: "No se pudo pegar desde el portapapeles.",
+      clipboardSuccess: "Enlace pegado correctamente.",
+      clipboardEmpty: "No se encontró un enlace en el portapapeles.",
+      mobileHint:
+        type === "mp3"
+          ? "En celular puedes pegar el enlace, convertirlo y descargar el audio en segundos."
+          : "En celular puedes pegar el enlace y descargar el video sin salir de la app.",
+      mobilePasteHint: "Toca el campo o el botón Pegar para usar el enlace copiado.",
+      sharedSuccess: "Enlace compartido de TikTok recibido correctamente.",
+      sharedError: "No se recibió un enlace válido de TikTok.",
     },
     en: {
       title: type === "mp3" ? "TikTok to MP3" : "TikTok Video Downloader",
@@ -51,17 +101,26 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
           : "Download TikTok videos without watermark",
       placeholder: "Paste TikTok link here...",
       button: type === "mp3" ? "DOWNLOAD MP3" : "DOWNLOAD",
-      loading: "Processing...",
+      loading: "Processing link...",
       errorVideo: "Could not load video",
+      genericError: "Something went wrong. Please try again.",
       downloadVideo: "Download Video",
       downloadAudio: "Download Audio (MP3)",
+      downloadingVideo: "Preparing video...",
+      downloadingAudio: "Preparing audio...",
+      downloadStartedVideo: "The video download has started.",
+      downloadStartedAudio: "The audio download has started.",
       previewTitle: "Video preview",
       descriptionTitle: "Description",
       hashtagsTitle: "Hashtags",
       paste: "Paste link",
+      pasteLoading: "Pasting...",
       clear: "Clear",
       success: "Video found successfully. You can download it now.",
-      emptyTitle: type === "mp3" ? "Convert TikTok to MP3 in seconds" : "Download TikTok videos in seconds",
+      emptyTitle:
+        type === "mp3"
+          ? "Convert TikTok to MP3 in seconds"
+          : "Download TikTok videos in seconds",
       emptyText:
         type === "mp3"
           ? "Paste the TikTok link, process the content, and download the audio ready for your phone or PC."
@@ -69,6 +128,15 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       guideCta: "Not sure how to use Clipnexo? View the step-by-step guide here.",
       invalidUrl: "Paste a valid TikTok link.",
       clipboardError: "Could not paste from clipboard.",
+      clipboardSuccess: "Link pasted successfully.",
+      clipboardEmpty: "No valid link was found in the clipboard.",
+      mobileHint:
+        type === "mp3"
+          ? "On mobile you can paste the link, convert it and download the audio in seconds."
+          : "On mobile you can paste the link and download the video without leaving the app.",
+      mobilePasteHint: "Tap the field or the Paste button to use your copied link.",
+      sharedSuccess: "Shared TikTok link received successfully.",
+      sharedError: "No valid TikTok link was received.",
     },
     pt: {
       title: type === "mp3" ? "TikTok para MP3" : "Baixar vídeos do TikTok",
@@ -78,17 +146,26 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
           : "Baixe vídeos do TikTok sem marca d’água",
       placeholder: "Cole o link do TikTok aqui...",
       button: type === "mp3" ? "BAIXAR MP3" : "BAIXAR",
-      loading: "Processando...",
+      loading: "Processando link...",
       errorVideo: "Não foi possível carregar o vídeo",
+      genericError: "Ocorreu um erro. Tente novamente.",
       downloadVideo: "Baixar Vídeo",
       downloadAudio: "Baixar Áudio (MP3)",
+      downloadingVideo: "Preparando vídeo...",
+      downloadingAudio: "Preparando áudio...",
+      downloadStartedVideo: "O download do vídeo começou.",
+      downloadStartedAudio: "O download do áudio começou.",
       previewTitle: "Pré-visualização do vídeo",
       descriptionTitle: "Descrição",
       hashtagsTitle: "Hashtags",
       paste: "Colar link",
+      pasteLoading: "Colando...",
       clear: "Limpar",
       success: "Vídeo encontrado com sucesso. Agora você pode baixá-lo.",
-      emptyTitle: type === "mp3" ? "Converta TikTok para MP3 em segundos" : "Baixe vídeos do TikTok em segundos",
+      emptyTitle:
+        type === "mp3"
+          ? "Converta TikTok para MP3 em segundos"
+          : "Baixe vídeos do TikTok em segundos",
       emptyText:
         type === "mp3"
           ? "Cole o link do TikTok, processe o conteúdo e baixe o áudio pronto para o celular ou PC."
@@ -96,47 +173,29 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       guideCta: "Não sabe como usar o Clipnexo? Veja o guia passo a passo aqui.",
       invalidUrl: "Cole um link válido do TikTok.",
       clipboardError: "Não foi possível colar da área de transferência.",
+      clipboardSuccess: "Link colado com sucesso.",
+      clipboardEmpty: "Nenhum link válido foi encontrado na área de transferência.",
+      mobileHint:
+        type === "mp3"
+          ? "No celular você pode colar o link, converter e baixar o áudio em segundos."
+          : "No celular você pode colar o link e baixar o vídeo sem sair do app.",
+      mobilePasteHint: "Toque no campo ou no botão Colar para usar o link copiado.",
+      sharedSuccess: "Link compartilhado do TikTok recebido com sucesso.",
+      sharedError: "Nenhum link válido do TikTok foi recebido.",
     },
   };
 
   const t = translations[lang] || translations.es;
 
-  const previewVideo = result?.play || result?.video || result?.videoUrl || null;
-  const previewImage = result?.cover || result?.thumbnail || result?.image || null;
-  const descriptionText =
-    result?.description || result?.desc || result?.title || result?.text || "";
-  const hashtagList = Array.isArray(result?.hashtags)
-    ? result.hashtags
-    : typeof result?.hashtags === "string"
-    ? result.hashtags.split(" ").filter(Boolean)
-    : typeof result?.desc === "string"
-    ? result.desc.split(" ").filter((item: string) => item.startsWith("#"))
-    : typeof result?.description === "string"
-    ? result.description.split(" ").filter((item: string) => item.startsWith("#"))
-    : [];
+  const previewVideo = getPreviewVideo(result);
+  const previewImage = getPreviewImage(result);
+  const descriptionText = getDescriptionText(result);
+  const hashtagList = getHashtagList(result);
+  const hasResultContent = hasResultContentUtil(result);
 
-  const hasResultContent = Boolean(result && (previewVideo || previewImage || descriptionText || hashtagList.length > 0 || result?.video || result?.audio));
+  const isBusy = loading || isPasting || downloadingType !== null;
 
-  const statusStyles = useMemo(
-    () => ({
-      success: {
-        background: "#ecfdf5",
-        border: "1px solid #a7f3d0",
-        color: "#065f46",
-      },
-      error: {
-        background: "#fef2f2",
-        border: "1px solid #fecaca",
-        color: "#991b1b",
-      },
-      info: {
-        background: "#eff6ff",
-        border: "1px solid #bfdbfe",
-        color: "#1d4ed8",
-      },
-    }),
-    []
-  );
+  const statusStyles = useMemo(() => getStatusStyles(), []);
 
   useEffect(() => {
     const updateViewport = () => {
@@ -149,17 +208,71 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
     return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
-  const handlePaste = async () => {
+  useEffect(() => {
+    setHistoryItems(getDownloadHistory());
+  }, []);
+
+  useEffect(() => {
+    if (initialUrl.trim()) {
+      setUrl(initialUrl.trim());
+      setStatusType("success");
+      setStatusMessage(t.sharedSuccess);
+      return;
+    }
+
+    if (shared && shareError) {
+      setStatusType("error");
+      setStatusMessage(t.sharedError);
+    }
+  }, [initialUrl, shared, shareError, t.sharedError, t.sharedSuccess]);
+
+  const readClipboardText = async () => {
+    if (typeof navigator === "undefined" || !navigator.clipboard?.readText) {
+      throw new Error("Clipboard API not available");
+    }
+    return navigator.clipboard.readText();
+  };
+
+  const handlePaste = async (showSuccessMessage = true) => {
+    setIsPasting(true);
+
     try {
-      const text = await navigator.clipboard.readText();
-      if (text) {
-        setUrl(text);
-        setStatusType("info");
-        setStatusMessage("");
+      const text = await readClipboardText();
+
+      if (!text?.trim()) {
+        setStatusType("error");
+        setStatusMessage(t.clipboardEmpty);
+        return;
       }
-    } catch (error) {
+
+      setUrl(text.trim());
+
+      if (showSuccessMessage) {
+        setStatusType("success");
+        setStatusMessage(t.clipboardSuccess);
+      }
+    } catch {
       setStatusType("error");
       setStatusMessage(t.clipboardError);
+    } finally {
+      setIsPasting(false);
+    }
+  };
+
+  const handleInputFocus = async () => {
+    if (!isMobile || autoPasteTriedRef.current || url.trim()) return;
+
+    autoPasteTriedRef.current = true;
+
+    try {
+      const text = await readClipboardText();
+      if (text?.trim() && isTikTokUrl(text)) {
+        setUrl(text.trim());
+        setStatusType("info");
+        setStatusMessage(t.clipboardSuccess);
+      }
+    } catch {
+      // sin mensaje para no molestar al usuario
     }
   };
 
@@ -168,10 +281,13 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
     setResult(null);
     setStatusMessage("");
     setStatusType("info");
+    setDownloadingType(null);
   };
 
   const handleDownload = async () => {
-    if (!url.trim() || !url.includes("tiktok.com")) {
+    if (isBusy) return;
+
+    if (!url.trim() || !isTikTokUrl(url)) {
       setStatusType("error");
       setStatusMessage(t.invalidUrl);
       return;
@@ -179,8 +295,8 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
 
     setLoading(true);
     setResult(null);
-    setStatusMessage("");
     setStatusType("info");
+    setStatusMessage(t.loading);
 
     try {
       const res = await fetch("/api/download", {
@@ -194,39 +310,80 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
       const data = await res.json();
       setResult(data);
 
-      if (data?.error) {
+      if (!res.ok || data?.error) {
         setStatusType("error");
-        setStatusMessage(t.errorVideo);
+        setStatusMessage(data?.error || t.errorVideo);
       } else {
         setStatusType("success");
         setStatusMessage(t.success);
+
+        const updatedHistory = addDownloadHistoryItem({
+          url,
+          type,
+          title: data?.title || data?.description || data?.desc || "",
+          description: data?.description || data?.desc || data?.title || "",
+          thumbnail: data?.cover || data?.thumbnail || data?.image || "",
+          videoUrl: data?.video || data?.play || data?.videoUrl || "",
+          audioUrl: data?.audio || "",
+        });
+
+        setHistoryItems(updatedHistory);
       }
-    } catch (error) {
+    } catch {
       setResult({ error: true });
       setStatusType("error");
-      setStatusMessage(t.errorVideo);
+      setStatusMessage(t.genericError);
     } finally {
       setLoading(false);
     }
   };
 
-  const forceDownload = async (fileUrl: string, filename: string) => {
+  const forceDownload = async (
+    fileUrl: string,
+    fallbackFilename: string,
+    fileType: "video" | "audio"
+  ) => {
+    setDownloadingType(fileType);
+    setStatusType("info");
+    setStatusMessage(fileType === "video" ? t.downloadingVideo : t.downloadingAudio);
+
     try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
+      const generatedFilename = buildDownloadFilename(
+        result?.title || result?.description || result?.desc || fallbackFilename,
+        fileType
+      );
 
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+      await downloadFile({
+        fileUrl,
+        fileType,
+        filename: generatedFilename,
+      });
 
-      window.URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      alert("Error al descargar el archivo");
+      setStatusType("success");
+      setStatusMessage(
+        fileType === "video" ? t.downloadStartedVideo : t.downloadStartedAudio
+      );
+    } catch {
+      setStatusType("error");
+      setStatusMessage(t.genericError);
+    } finally {
+      setDownloadingType(null);
     }
+  };
+
+  const handleReuseHistory = (item: DownloadHistoryItem) => {
+    setUrl(item.url);
+    setStatusType("info");
+    setStatusMessage("");
+  };
+
+  const handleRemoveHistory = (id: string) => {
+    setHistoryItems(removeDownloadHistoryItem(id));
+  };
+
+  const handleClearHistory = () => {
+    clearDownloadHistory();
+    setHistoryItems([]);
   };
 
   return (
@@ -239,7 +396,6 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
         color: "inherit",
       }}
     >
-
       <div
         style={{
           maxWidth: hasResultContent ? "1040px" : "640px",
@@ -256,6 +412,10 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
           placeholder={t.placeholder}
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          onFocus={handleInputFocus}
+          autoComplete="off"
+          autoCapitalize="none"
+          spellCheck={false}
           style={{
             width: "100%",
             padding: "15px",
@@ -277,7 +437,8 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
         >
           <button
             type="button"
-            onClick={handlePaste}
+            onClick={() => handlePaste(true)}
+            disabled={isBusy}
             style={{
               flex: "1 1 160px",
               padding: "12px",
@@ -286,15 +447,17 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
               background: "#fff",
               color: "#111",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isBusy ? "not-allowed" : "pointer",
+              opacity: isBusy ? 0.7 : 1,
             }}
           >
-            {t.paste}
+            {isPasting ? t.pasteLoading : t.paste}
           </button>
 
           <button
             type="button"
             onClick={handleClear}
+            disabled={isBusy}
             style={{
               flex: "1 1 160px",
               padding: "12px",
@@ -303,7 +466,8 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
               background: "#f9fafb",
               color: "#111",
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: isBusy ? "not-allowed" : "pointer",
+              opacity: isBusy ? 0.7 : 1,
             }}
           >
             {t.clear}
@@ -312,6 +476,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
 
         <button
           onClick={handleDownload}
+          disabled={isBusy}
           style={{
             width: "100%",
             padding: "15px",
@@ -320,7 +485,8 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
             color: "white",
             fontWeight: "bold",
             background: "linear-gradient(90deg, #6366f1, #ec4899)",
-            cursor: "pointer",
+            cursor: isBusy ? "not-allowed" : "pointer",
+            opacity: isBusy ? 0.85 : 1,
           }}
         >
           {loading ? t.loading : t.button}
@@ -332,9 +498,10 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
               marginTop: "14px",
               borderRadius: "10px",
               padding: "12px 14px",
-              fontSize: "14px",
+              fontSize: isMobile ? "13px" : "14px",
               fontWeight: 600,
               textAlign: "left",
+              lineHeight: 1.5,
               ...statusStyles[statusType],
             }}
           >
@@ -363,6 +530,7 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
             >
               {t.emptyTitle}
             </p>
+
             <p
               style={{
                 margin: 0,
@@ -373,6 +541,31 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
             >
               {t.emptyText}
             </p>
+
+            {isMobile && (
+              <p
+                style={{
+                  margin: "10px 0 0 0",
+                  fontSize: "13px",
+                  lineHeight: 1.6,
+                  color: "#64748b",
+                }}
+              >
+                {t.mobileHint}
+              </p>
+            )}
+
+            <p
+              style={{
+                margin: "8px 0 0 0",
+                fontSize: "13px",
+                lineHeight: 1.6,
+                color: "#64748b",
+              }}
+            >
+              {t.mobilePasteHint}
+            </p>
+
             <p
               style={{
                 margin: "10px 0 0 0",
@@ -407,7 +600,9 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: isMobile ? "1fr" : hasResultContent ? "minmax(0, 1.1fr) minmax(280px, 0.9fr)" : "1fr",
+                  gridTemplateColumns: isMobile
+                    ? "1fr"
+                    : "minmax(0, 1.1fr) minmax(280px, 0.9fr)",
                   gap: isMobile ? "14px" : "16px",
                   textAlign: "left",
                   background: "#f8fafc",
@@ -539,7 +734,8 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
                   <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                     {type !== "mp3" && result?.video && (
                       <button
-                        onClick={() => forceDownload(result.video, "video.mp4")}
+                        onClick={() => forceDownload(result.video, "video.mp4", "video")}
+                        disabled={isBusy}
                         style={{
                           padding: "12px",
                           background: "#2563eb",
@@ -547,16 +743,18 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
                           border: "none",
                           borderRadius: "8px",
                           fontWeight: "bold",
-                          cursor: "pointer",
+                          cursor: isBusy ? "not-allowed" : "pointer",
+                          opacity: downloadingType === "video" ? 0.85 : 1,
                         }}
                       >
-                        {t.downloadVideo}
+                        {downloadingType === "video" ? t.downloadingVideo : t.downloadVideo}
                       </button>
                     )}
 
                     {result?.audio && (
                       <button
-                        onClick={() => forceDownload(result.audio, "audio.mp3")}
+                        onClick={() => forceDownload(result.audio, "audio.mp3", "audio")}
+                        disabled={isBusy}
                         style={{
                           padding: "12px",
                           background: "#16a34a",
@@ -564,10 +762,11 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
                           border: "none",
                           borderRadius: "8px",
                           fontWeight: "bold",
-                          cursor: "pointer",
+                          cursor: isBusy ? "not-allowed" : "pointer",
+                          opacity: downloadingType === "audio" ? 0.85 : 1,
                         }}
                       >
-                        {t.downloadAudio}
+                        {downloadingType === "audio" ? t.downloadingAudio : t.downloadAudio}
                       </button>
                     )}
                   </div>
@@ -576,13 +775,19 @@ export default function DownloaderBox({ lang, type = "video" }: Props) {
             )}
 
             {result?.error && (
-              <p style={{ color: "red", marginTop: "10px" }}>
-                {t.errorVideo}
-              </p>
+              <p style={{ color: "red", marginTop: "10px" }}>{t.errorVideo}</p>
             )}
           </div>
         )}
       </div>
+
+      <DownloadHistory
+        lang={lang}
+        items={historyItems}
+        onReuse={handleReuseHistory}
+        onRemove={handleRemoveHistory}
+        onClear={handleClearHistory}
+      />
     </section>
   );
 }
